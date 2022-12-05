@@ -93,6 +93,8 @@ public class Solution extends VersionControl {
 链接：https://leetcode.cn/problems/search-insert-position
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
+数组升序排列，left左边的值总是小于待插入的值
+
 ```java
 class Solution {
     public int searchInsert(int[] nums, int target) {
