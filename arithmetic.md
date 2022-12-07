@@ -118,13 +118,13 @@ class Solution {
 }
 ```
 
-链表问题解法：
+### 链表问题解法：
 
 合并有序链表：双指针，比较大小后移；
 
 分割链表：生成2个链表，一个存储大于给定值的，一个存储小于给定值的。
 
-合并k个有序链表：优先级队列；
+**合并k个有序链表：优先级队列；**
 
 单链表的倒数第k个节点：一个指针先走k个节点，再一个指针p2指向head，开始同步走n-k个节点，此时p2走过n-k个节点，也就是倒数第k个节点；
 
@@ -132,4 +132,567 @@ class Solution {
 
 链表成环：p1走一步，p2走2步，如果会相遇，说明成环；
 
-链表相交：a-->b;b-->a遍历，a，b相交节点后链表长度一致。
+链表相交：a、b首尾相连  a-->b;b-->a遍历，a，b相交节点后链表长度一致。
+
+
+
+链表反转：
+
+```java
+//递归实现
+class Solution{
+	public ListNode reverse(ListNode head){
+        if(head==null || head.next==null){
+            return head;
+        } 
+        ListNode last=reverse(head.next);
+        head.next.next=head;
+        head.next=null;
+        return last;
+    }
+}
+```
+
+反转链表前n个元素
+
+```java
+class Solution{
+    ListNode p=null;
+    public ListNode reverseN(ListNode head,int n){
+        if(n==1){
+            p=head.next;
+            return head;
+        }
+        ListNode last=reverseN(head.next,n-1);
+        head.next.next=head;
+        head.next=p;
+        return last;
+    }
+}
+```
+
+反转链表[m,n]之间的元素
+
+```java
+	class Solution{
+        public ListNode reverseBetween(ListNode head,int m, int n){
+            if(m==1){
+                return reverseN(head,n);
+            }
+            head.next=reverseBetween(head.next,m-1,n-1);
+            return head;
+        }
+    }
+```
+
+k个一组反转链表
+
+```java
+class Solution{
+	public ListNode reverse(ListNode a,ListNode b){
+        //三个指针分别记录前驱节点，当前节点，后置节点
+        ListNode pre,cur,next;
+        pre=null;
+        next=cur=head;
+        while(cur!=b){
+            next=cur.next;
+            cur.next=pre;
+            pre=cur;
+            cur=next;
+        }
+        //最后一次循环导致cur=b.next;所以需要返回pre
+        return pre;
+    }
+    public ListNode reverseByGroup(ListNode head,int k){
+        if(head==null || head.next==null){
+            return head;
+        }
+        ListNode a,b;
+        a=b=head;
+        for(int i=0;i<k;i++){
+            if(b.next==null){
+                //长度不足k则不反转
+                return head;
+            }
+            b=b.next;
+        }
+        //反转小区间内的链表，获取反转后的链表头
+        ListNode newHead=reverse(a,b);
+        a.next=reverseByGroup(b,k);
+        return newhead;
+    }
+}
+```
+
+
+
+寻找回文串
+
+```java
+class Solution{
+    publlic String palindrome(String s,int left,int right){
+        while(left>0 && right<s.length && s.chartAt(left)==s.chartAt(right)){
+            left++;
+            right--;
+        }
+        return s.subString(left+1,right);
+    }
+}
+```
+
+判断字符串是否是回文串
+
+```java
+class Solution{
+    public boolean isPalindrome(String s){
+        int left=0;
+        int right=s.length-1;
+        while(left<right){
+            if(s.charAt(left)==s.charAt(right)){
+                left++;
+                right--;
+            }
+            else{
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+
+判断回文链表
+
+```java
+//递归实现
+class Solution{
+    ListNode left;
+    public boolean isPalindromeList(ListNode head){
+        left=head;
+        return travarse(head);
+    }
+    public boolean travarse(ListNode right){
+        if(right==null)
+            return true;
+        boolean res=travarse(right.next);
+        res=res&&(right.val==left.val);
+        left=left.next;
+        return res;
+    }
+}
+
+//双指针实现
+class Solution{
+    public boolean isPalindromeList(ListNode head){
+        ListNode left,right;
+        while(right!=null || right.next!=null){
+            left=left.next;
+            right=rigt.next.next;
+        }
+        if(right!=null){
+            left=left.next;
+        }
+        ListNode newLeft=head;
+        ListNode newRight=reverse(left);
+        while(newRight!=null){
+            if(newLeft.var!=newRight.var){
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    public ListNode reverse(ListNode node){
+        ListNode pre,cur,next;
+        pre=null;
+        cur=next=node;
+        while(node!=null){
+            next=node.next;
+            node.next=pre;
+            pre=cur;
+            cur=next;
+        }
+    }
+}
+```
+
+
+
+### 数组问题解法：
+
+#### 快慢指针：
+
+**去除重复元素**
+
+```java
+//快慢指针，由于是有序数组，两个指针指向的值不相等则慢指针前进一步，存储遇到的不重复值。
+class Solution{
+    public int removeDuplicate(int[] nums){
+        if(nums==null){
+            return 0;
+        }
+        int slow=0;
+        int fast=0;
+        while(fast!=(nums.length-1)){
+            if(nums[slow]!=nums[fast]){
+                nums[++slow]=nums[fast];
+            }
+            fast++;
+        }
+        return slow+1;
+    }
+}
+```
+
+
+
+**去除链表重复元素**
+
+```java
+//快慢指针遍历链表，值不同则慢指针指向快指针
+class Solution{
+    public ListNode removeDuplicate(ListNode head){
+        if(head==null){
+            return null;
+        }
+        ListNode slow;
+        ListNode fast;
+        slow=fast=head;
+        while(fast!=null){
+            if(slow.val==fast.val){
+                slow.next=fast;
+                slow=slow.next;
+            }
+            fast=fast.next;
+        }
+        //断开慢指针和原链表
+        slow.next=null;
+        return head;
+    }
+}
+```
+
+
+
+**移除元素**
+
+```java
+//将不重复的元素赋值给数组
+class Solution{
+    int removeElement(int[] nums,int target){
+        int slow=0;
+        int fast=0;
+        while(fast!=nums.length-1){
+            if(nums[fast]!=target){
+                nums[slow++]=nums[fast];
+            }
+            fast++;
+        }
+        return fast+1;
+    }
+}
+```
+
+**移除**0
+
+```java
+//将非0元素赋值给数组。
+class Solution{
+    void removeZores(int[] nums){
+        int slow=0;
+        int fast=0;
+        while(fast!=(nums.length-1)){
+            if(nums[fast]!=0){
+                nums[slow++]=nums[fast];
+            }
+            fast++;
+        }
+        while(slow!=(nums.length-1)){
+            nums[slow++]=0;
+        }
+    }
+}
+```
+
+#### 左右指针
+
+**二分查找**
+
+```java
+class Solution{
+    public int binarySearch(int[] nums,int target){
+        int left=0;
+        int right=nums.length-1;
+        int mid=0;
+        while(right>=left){
+            mid=(nums[left]+nums[right])>>>1;
+            if(target==nums[mid]){
+                return mid;
+            }
+            else if(target<nums[mid]){
+                right=mid-1;
+            }
+            else{
+                left=mid+1;
+            }
+        }
+        return -1;
+    }
+}
+```
+
+**两数之和**
+
+```java
+class Solution{
+    public int[] sum(int[] nums,int target){
+        int left=0;
+        int right=nums.length-1;
+        int temp=0;
+        while(left<right){
+            temp=nums[left]+nums[right];
+            if(temp==target){
+                return new int[]{left+1,right+1};
+            }
+            else if(temp>target){
+                right--;
+            }
+            else{
+                left++;
+            }
+        }
+    }
+}
+```
+
+**反转字符串**
+
+```java
+class Solution{
+	public void reverseString(char[] s){
+        int left=0;
+        int right=s.length-1;
+        while(left<right){
+            char temp=s[left];
+            s[left]=s[right];
+            s[right]=temp;
+            left++;
+            right--;
+        }
+    }
+}
+```
+
+
+
+
+
+**判断回文串**
+
+
+
+```java
+boolean isPalindrome(String s){
+    // 一左一右两个指针相向而行
+    int left = 0, right = s.length() - 1;
+    while (left < right) {
+        if (s.charAt(left) != s.charAt(right)) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+
+
+
+**寻找最长回文串**
+
+```java
+String longestPalindrome(String s) {
+    String ret = "";
+    for (int i = 0; i < s.length(); i++) {
+        String temp1 = palindrome(s, i, i);
+        String temp2 = palindrome(s, i, j + 1);
+        ret = ret.length() > temp1.length() ? ret : temp1;
+        ret = ret.length() > temp2.length() ? ret : temp2;
+    }
+    return ret;
+}
+
+String palindrome(String s, int l, int r) {
+    while (l > 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
+        l--;
+        r++;
+    }
+    return s.substring(l + 1, r);
+}
+```
+
+
+
+#### 一维数组前缀和[303. 区域和检索 - 数组不可变](https://leetcode.cn/problems/range-sum-query-immutable/)
+
+```java
+//计算前n个元素和，存储到index=n的位置,求[1,4]区间的和，用preSum[5]-preSum[1]
+class NumArray {
+    // 前缀和数组
+    private int[] preSum;
+
+    /* 输入一个数组，构造前缀和 */
+    public NumArray(int[] nums) {
+        // preSum[0] = 0，便于计算累加和
+        preSum = new int[nums.length + 1];
+        // 计算 nums 的累加和
+        for (int i = 1; i < preSum.length; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+    }
+    
+    /* 查询闭区间 [left, right] 的累加和 */
+    public int sumRange(int left, int right) {
+        return preSum[right + 1] - preSum[left];
+    }
+}
+
+```
+
+
+
+#### **二维数组前缀和**[304. 二维区域和检索 - 矩阵不可变](https://leetcode.cn/problems/range-sum-query-2d-immutable/)
+
+```java
+class NumMatrix {
+    private int[][] preSum;
+
+    public NumMatrix(int[][] nums) {
+        int m = nums.length;
+        int n = nums[0].length;
+        if (n == 0) {
+            return;
+        }
+        preSum = new int[m + 1][n + 1];
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                preSum[i][j] = preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1] + nums[i][j];
+            }
+        }
+    }
+
+    public int sumRegion(int x1, int y1, int x2, int y2) {
+        return preSum[x2 + 1][y2 + 1] - preSum[x1][y2 + 1] - preSum[x2 + 1][y1] - preSum[x1][y1];
+    }
+}
+```
+
+
+
+### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
+
+双指针 方法一：找到正数和负数的分界点，从分界点向两边遍历；方法二：从两个边界向分界点遍历。
+
+```java
+class Solution {
+    public int[] sortedSquares(int[] nums) {
+         if (nums.length < 1) {
+            return null;
+        }
+        int left = 0;
+        int right = nums.length - 1;
+        int p = nums.length - 1;
+        int[] result = new int[nums.length];
+        while (p >= 0) {
+            int r1 = nums[left] * nums[left];
+            int r2 = nums[right] * nums[right];//比较两个指针指向的数的平方大小
+            if (r1 > r2) {
+                result[p] = r1;//将较大的数先放入数组最大位置
+                left++;
+            } else {
+                result[p] = r2;
+                right--;
+            }
+            p--;
+        }
+        return result;
+    }
+}
+```
+
+### [189. 轮转数组](https://leetcode.cn/problems/rotate-array/)
+
+方法一：使用额外数组，通过(n+k)%length确定位置；
+
+**方法二：环状替换**
+
+方法三：数组翻转：先翻转整个数组，再翻转[0,k-1],[k,length-1]就得到结果。
+
+```java
+class Solution {
+    public void rotate(int[] nums, int k) {
+        k = k % nums.length;
+        reverse(nums, 0, nums.length-1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    }
+    public void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            int temp = nums[start];
+            nums[start] = nums[end];
+            nums[end] = temp;
+            start++;
+            end--;
+        }
+    }
+}
+```
+
+### [283. 移动零](https://leetcode.cn/problems/move-zeroes/)
+
+```java
+//双指针，先将非0元素赋值到数组开头，再将之后元素赋值为0
+class Solution{
+    public void moveZeros(int[] nums){
+        int slow=0;
+        int fast=0;
+        while(fast!=nums.length-1){
+            if(nums[fast]!=0){
+                nums[slow++]=nums[fast];
+            }
+            fast++;
+        }
+        while(slow!=nums.length+1){
+            nums[slow++]=0;
+        }
+    }
+}
+```
+
+### [167. 两数之和 II - 输入有序数组](https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/)
+
+```java
+//双指针，如果sum>target则，右指针左移，如果sum<target则左指针右移
+class Solution{
+    public int[] twoSum(int[] numbers,int target){
+        int left=0;
+        int right=numbers.length-1;
+        int sum=0;
+        while(left<right){
+            sum=numbers[left]+numbers[right];
+            if(sum==target){
+                return new int[]{left+1,right+1};
+            }
+            else if(sum<target){
+                left++;
+            }
+            else{
+                right--;
+            }
+        }
+    }
+}
+```
+

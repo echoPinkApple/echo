@@ -359,3 +359,110 @@ For caching declaration, Spring’s caching abstraction provides a set of Java a
 - **`ThreadPoolExecutor.CallerRunsPolicy`** ：调用执行自己的线程运行任务，也就是直接在调用`execute`方法的线程中运行(`run`)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
 - **`ThreadPoolExecutor.DiscardPolicy`** ：不处理新任务，直接丢弃掉。
 - **`ThreadPoolExecutor.DiscardOldestPolicy`** ： 此策略将丢弃最早的未处理的任务请求。
+
+
+
+
+
+```java
+//spring 扩展消息转换器不生效解决方法：开启允许重复模块注册，注册完毕后关闭允许重复模块注册
+// objectMapper.disable(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS);
+@Override
+public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+   log.info("扩展消息转换器");
+   MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+   ObjectMapper objectMapper = converter.getObjectMapper();
+   objectMapper.disable(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS);
+   converter.setObjectMapper(new JacksonObjectMapper());
+   converters.add(0,converter);
+   objectMapper.enable(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS);
+}
+```
+
+## Linux设置开机启动的三种方法
+
+### 方法一 添加命令
+
+编辑文件 /etc/rc.local
+
+```javascript
+vim /ect/rc.local
+```
+
+复制
+
+/ect/rc.local和/ect/rc.d/rc.local是软链接关系
+
+```javascript
+chmod +x /ect/rc.d/rc.local
+```
+
+复制
+
+### 方法二 添加脚本
+
+自己写一个shell脚本 将写好的脚本（.sh文件）放到目录 /etc/profile.d/ 下，系统启动后就会自动执行该目录下的所有shell脚本。
+
+```javascript
+cd /etc/profile.d/
+```
+
+复制
+
+添加脚本 srs.sh
+
+```javascript
+#!/bin/sh
+
+cd /usr/local/srs2
+nohup ./objs/srs -c conf/z.conf>./log.txt &
+```
+
+复制
+
+### 方法二 添加服务
+
+添加文件 新建/etc/init.d/srs.sh 文件
+
+
+
+
+
+## redis 集群搭建
+
+```shell
+#创建容器 
+docker create --name redis-node01 --net host -v /data/redis-data/node01:/data -v /data/redis-data/node01/redis.conf:/usr/local/etc/redis/redis.conf -p 6379:6379 redis:latest --cluster-enabled yes --cluster-config-file nodes-node-01.conf --port 6379 --protected-mode no
+docker create --name redis-node02 --net host -v /data/redis-data/node02:/data -v /data/redis-data/node02/redis.conf:/usr/local/etc/redis/redis.conf redis:latest --cluster-enabled yes --cluster-config-file nodes-node-02.conf --port 6380 --protected-mode no
+docker create --name redis-node03 --net host -v /data/redis-data/node03:/data -v /data/redis-data/node03/redis.conf:/usr/local/etc/redis/redis.conf redis:latest --cluster-enabled yes --cluster-config-file nodes-node-03.conf --port 6381 --protected-mode no
+
+
+
+docker create --name redis-node01 -v /data/redis-data/node01:/data -p 6379:6379 redis:latest --cluster-enabled yes --cluster-config-file nodes-node-01.conf 
+docker create --name redis-node02 -v /data/redis-data/node02:/data -p 6379:6379 redis:latest --cluster-enabled yes --cluster-config-file nodes-node-02.conf
+docker create --name redis-node03 -v /data/redis-data/node03:/data -p 6379:6379 redis:latest --cluster-enabled yes --cluster-config-file nodes-node-03.conf 
+
+
+#启动容器 
+docker start redis-node01 redis-node02 redis-node03
+#进入redis-node01容器进行操作 
+docker exec -it redis-node01 /bin/bash
+redis-cli --cluster create 172.27.0.1:6379 172.27.0.1:6380 172.27.0.1:6381 --cluster-replicas 0
+redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-replicas 0
+```
+
+
+
+
+
+## instanceof 关键字
+
+instanceof 严格来说是Java中的一个双目运算符，用来测试一个对象是否为一个类的实例，用法为：
+
+```java
+boolean result = obj instanceof Class
+```
+
+　　其中 obj 为一个对象，Class 表示一个类或者一个接口，当 obj 为 Class 的对象，或者是其直接或间接子类，或者是其接口的实现类，结果result 都返回 true，否则返回false。
+
+　　注意：编译器会检查 obj 是否能转换成右边的class类型，如果不能转换则直接报错，如果不能确定类型，则通过编译，具体看运行时定。
