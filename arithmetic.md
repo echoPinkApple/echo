@@ -589,6 +589,144 @@ class NumMatrix {
 }
 ```
 
+#### 差分数组
+
+```java
+class Difference {
+    private int[] diff;
+
+    public Difference(int[] nums) {
+        this.diff = new int[nums.length];
+        this.diff[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            diff[i] = nums[i] - nums[i - 1];
+        }
+    }
+
+    public void increment(int l, int r, int val) {
+        diff[l] += val;
+        if (r + 1 < diff.length) {
+            diff[r + 1] -= val;
+        }
+    }
+
+    public int[] result() {
+        int[] ret = new int[diff.length];
+        ret[0] = diff[0];
+        for (int i = 1; i < ret.length; i++) {
+            ret[i] = ret[i - 1] + diff[i];
+        }
+        return ret;
+    }
+}
+```
+
+370.**区间加法**
+
+```java
+//利用差分数组
+int[] getModifiedArray(int length,int[][] updates){
+  int[] arr=new int[length];
+  Difference diff=new Difference(arr);
+  for(int[] temp: updates){
+    int l=temp[0];
+    int r=temp[1];
+    int val=temp[2];
+    diff.increment(l,r,val);
+  }
+  return dirr.result;
+}
+```
+
+1109.**航班预订统计**
+
+```java
+int[] corpFlightBookings(int[][] bookings, int n){
+  int[] arr=new int[n];
+  Difference diff=new Difference(arr);
+  for(int[] temp : bookings){
+    diff.increment(temp[0]-1,temp[1]-1,temp[2]);
+  }
+  return diff.result();
+}
+```
+
+1094.拼车
+
+```java
+boolean carPooling(int[][] trips, int capacity){
+  int[] arr=new int[1001];
+  Difference diff=new Difference(arr);
+  for(int[] trip : trips){
+    diff.increment(trip[1],trip[2],trip[0]);
+  }
+  int[] result= diff.result();
+  for(int i=0;i<arr.length;i++){
+    if(result[i]>capacity){
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+
+
+#### 数组遍历
+
+**旋转数组**
+
+```java
+
+/**
+ * 顺时针旋转数组90度
+ */
+class Solution {
+    public void rotate(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for (int[] row : matrix) {
+            reverse(row);
+        }
+    }
+
+    public void reverse(int[] row) {
+        int l = 0;
+        int r = row.length;
+        while (l < r) {
+            int temp = row[l];
+            row[l] = row[r];
+            row[r] = temp;
+        }
+    }
+
+}
+//逆时针旋转90度
+// 将二维矩阵原地逆时针旋转 90 度
+void rotate2(int[][] matrix) {
+    int n = matrix.length;
+    // 沿左下到右上的对角线镜像对称二维矩阵
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n - i; j++) {
+            // swap(matrix[i][j], matrix[n-j-1][n-i-1])
+            int temp = matrix[i][j];
+            matrix[i][j] = matrix[n - j - 1][n - i - 1];
+            matrix[n - j - 1][n - i - 1] = temp;
+        }
+    }
+    // 然后反转二维矩阵的每一行
+    for (int[] row : matrix) {
+        reverse(row);
+    }
+}
+
+```
+
 
 
 ### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
