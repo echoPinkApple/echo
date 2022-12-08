@@ -727,6 +727,109 @@ void rotate2(int[][] matrix) {
 
 ```
 
+**顺时针遍历数组**
+
+```JAVA
+public static List<Integer> spiralOrder(int[][] matrix) {
+        int leftBound = 0;
+        int upperBound = 0;
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int rightBound = m;
+        int lowerBound = n;
+        List<Integer> list = new LinkedList<>();
+        while (list.size() < m * n) {
+            //先从左到右遍历，在上边界小于下边界的情况
+            if (upperBound <= lowerBound) {
+                for (int i = leftBound; i < rightBound; i++) {
+                    list.add(matrix[upperBound][i]);
+                    i++;
+                }
+                upperBound++;
+            }
+			//从右上到左下遍历
+            if (leftBound <= rightBound) {
+                for (int i = upperBound; i < lowerBound; i++) {
+                    list.add(matrix[i][rightBound - 1]);
+                    i++;
+                }
+                rightBound--;
+            }
+            if (upperBound <= lowerBound) {
+                for (int i = rightBound; i >= 0; i++) {
+                    list.add(matrix[lowerBound - 1][i]);
+                    i--;
+                }
+                lowerBound--;
+            }
+            if (leftBound <= rightBound) {
+                for (int i = lowerBound; i >= 0; i++) {
+                    list.add(matrix[i][leftBound]);
+                    i--;
+                }
+                leftBound++;
+            }
+        }
+        return list;
+    }
+```
+
+
+
+#### [59. 螺旋矩阵 II](https://leetcode.cn/problems/spiral-matrix-ii/)****
+
+```java
+int[][] generateMatrix(int n) {
+    int[][] matrix = new int[n][n];
+    int upper_bound = 0, lower_bound = n - 1;
+    int left_bound = 0, right_bound = n - 1;
+    // 需要填入矩阵的数字
+    int num = 1;
+    
+    while (num <= n * n) {
+        if (upper_bound <= lower_bound) {
+            // 在顶部从左向右遍历
+            for (int j = left_bound; j <= right_bound; j++) {
+                matrix[upper_bound][j] = num++;
+            }
+            // 上边界下移
+            upper_bound++;
+        }
+        
+        if (left_bound <= right_bound) {
+            // 在右侧从上向下遍历
+            for (int i = upper_bound; i <= lower_bound; i++) {
+                matrix[i][right_bound] = num++;
+            }
+            // 右边界左移
+            right_bound--;
+        }
+        
+        if (upper_bound <= lower_bound) {
+            // 在底部从右向左遍历
+            for (int j = right_bound; j >= left_bound; j--) {
+                matrix[lower_bound][j] = num++;
+            }
+            // 下边界上移
+            lower_bound--;
+        }
+        
+        if (left_bound <= right_bound) {
+            // 在左侧从下向上遍历
+            for (int i = lower_bound; i >= upper_bound; i--) {
+                matrix[i][left_bound] = num++;
+            }
+            // 左边界右移
+            left_bound++;
+        }
+    }
+    return matrix;
+}
+
+```
+
+
+
 
 
 ### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
@@ -829,6 +932,54 @@ class Solution{
             else{
                 right--;
             }
+        }
+    }
+}
+```
+
+### [557. 反转字符串中的单词 III](https://leetcode.cn/problems/reverse-words-in-a-string-iii/)
+
+```java
+class Solution {
+    public String reverseWords(String s) {
+        StringBuilder buffer=new StringBuilder();
+        int length=s.length();
+        int fast=0;
+        int slow=0;
+        while (fast<length){
+            slow=fast;
+            while (fast<s.length() && s.charAt(fast)!=' '){
+                fast++;
+            }
+            for (int i=slow;i<fast;i++){
+                //倒数第i+slow个元素=fast+slow-i-1
+                buffer.append(s.charAt(fast-i+slow-1));
+            }
+            //字符串末尾不添加空格
+            if (fast<s.length()){
+                buffer.append(' ');
+                fast++;
+            }
+        }
+        return buffer.toString();
+    }
+}
+```
+
+### [344. 反转字符串](https://leetcode.cn/problems/reverse-string/)
+
+```java
+//左右指针
+class Solution {
+    public void reverseString(char[] s) {
+        int left=0;
+        int right=s.length-1;
+        while(left<right){
+            char temp=s[left];
+            s[left]=s[right];
+            s[right]=temp;
+            left++;
+            right--;
         }
     }
 }
