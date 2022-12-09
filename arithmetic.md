@@ -793,7 +793,7 @@ int[][] generateMatrix(int n) {
                 matrix[upper_bound][j] = num++;
             }
             // 上边界下移
-            upper_bound++;
+            upper_bound++; 
         }
         
         if (left_bound <= right_bound) {
@@ -981,6 +981,44 @@ class Solution {
             left++;
             right--;
         }
+    }
+}
+```
+
+### [876. 链表的中间结点](https://leetcode.cn/problems/middle-of-the-linked-list/)
+
+```java
+class Sulotion{
+    public ListNode middleNode(ListNode node){
+        ListNode slow,fast;
+        slow=fast=node;
+        while(fast!=null && fast.next!=null){
+            fast=fast.next.next;
+            slow=slow.next;
+        }
+        return slow;
+    }
+}
+```
+
+### [19. 删除链表的倒数第 N 个结点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+
+```java
+class Solution{
+    public ListNode removeNthFromEnd(ListNode head,int n){
+        ListNode slow=new ListNode(-1);
+        slow.next=head;
+        ListNode dummy=slow;
+        ListNode fast=head;
+        for(int i=0;i<n;i++){
+            fast=fast.next;
+        }
+        while(fast!=null){
+            fast=fast.next;
+            slow=slow.next;
+        }
+        slow.next=slow.next.next;
+        return dummy.next;
     }
 }
 ```
