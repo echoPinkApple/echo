@@ -834,3 +834,236 @@ class Solution{
 }
 ```
 
+### 76.最小覆盖子串
+
+滑动窗口
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        //存储需要匹配的字符串
+        HashMap<Character,Integer> need=new HashMap<>();
+        //存储窗口中的字符串
+        HashMap<Character,Integer> window=new HashMap<>();
+        //将需要匹配的字符加入need
+        for (int i = 0; i < t.length(); i++) {
+            need.put(t.charAt(i), need.getOrDefault(t.charAt(i), 0)+1);
+        }
+        //左右指针，是否匹配标志
+        int left=0,right=0,valid=0;
+        int start=0,len=Integer.MAX_VALUE;
+        //右指针一直向后移动
+        while(right<s.length()){
+            Character c=s.charAt(right);
+            right++;
+            //如果需要匹配的字符含有该字符
+            if(need.containsKey(c)){
+                //滑动窗口hashMap对应的value+1
+                window.put(c, window.getOrDefault(c,0)+1);
+                //如果字符长度相等了，valid+1；
+                if(window.get(c).equals(need.get(c))){
+                    valid++;
+                }
+            }
+            //匹配到了一个子串
+            while(valid==need.size()){
+                //记录该子串位置
+                if(right-left<len){
+                    start=left;
+                    len=right-left;
+                }
+                //此时左指针移动
+                char d = s.charAt(left);
+                left++;
+                //匹配字符串包含移除的字符，窗口里面该key对应value-1
+                if(need.containsKey(d)){
+                    //此时若window，need对应的key不相等，则valid-1
+                    if(window.get(d).equals(need.get(d))){
+                        valid--;
+                    }
+                    window.put(d, window.getOrDefault(d, 0)-1);
+                }
+            }
+        }
+        return len==Integer.MAX_VALUE?"":s.substring(start, start+len);
+    }
+}
+```
+
+
+
+### 滑动窗口问题解法：
+
+1、什么时候应该扩大窗口？
+
+2、什么时候应该缩小窗口？
+
+3、什么时候应该更新答案？
+
+### 567.字符串的排列
+
+1、本题移动 `left` 缩小窗口的时机是窗口大小大于 `t.size()` 时，因为排列嘛，显然长度应该是一样的。
+
+2、当发现 `valid == need.size()` 时，就说明窗口中就是一个合法的排列，所以立即返回 `true`。
+
+至于如何处理窗口的扩大和缩小，和最小覆盖子串完全相同。
+
+> PS：由于这道题中 `[left, right)` 其实维护的是一个**定长**的窗口，窗口大小为 `t.size()`。因为定长窗口每次向前滑动时只会移出一个字符，所以可以把内层的 while 改成 if，效果是一样的。
+
+```java
+public boolean checkInclusion(String t,String s){
+        HashMap<Character,Integer> window=new HashMap<>();
+        HashMap<Character,Integer> need=new HashMap<>();
+        for (int i = 0; i < t.length(); i++) {
+            need.put(t.charAt(i), need.getOrDefault(t.charAt(i), 0)+1);
+        }
+        //左右指针，是否匹配标志
+        int left=0,right=0,valid=0;
+        // int start=0,len=Integer.MAX_VALUE;
+        while(right<s.length()){
+            char a = s.charAt(right);
+            right++;
+            if(need.containsKey(a)){
+                if(need.get(a).equals(window.get(a))){
+                    valid++;
+                }
+                window.put(a, window.getOrDefault(a, 0)+1);
+            }
+            if(right-left==t.length()){
+                if(valid==t.length()){
+                    return true;
+                }
+                char charAt = s.charAt(left);
+                left++;
+                if(need.containsKey(charAt)){
+                    if(window.get(charAt).equals(need.get(charAt))){
+                        valid--;
+                    }
+                    window.put(charAt, window.getOrDefault(charAt, 0)-1);
+                }
+            }
+        }
+        return false;
+    }
+```
+
+
+
+
+
+### [438. 找到字符串中所有字母异位词](https://leetcode.cn/problems/find-all-anagrams-in-a-string/)
+
+```java
+public List<Integer> checkInclusion(String t,String s){
+        HashMap<Character,Integer> window=new HashMap<>();
+        HashMap<Character,Integer> need=new HashMap<>();
+  			List<Integer> res=new ArrayList<>();
+        for (int i = 0; i < t.length(); i++) {
+            need.put(t.charAt(i), need.getOrDefault(t.charAt(i), 0)+1);
+        }
+        //左右指针，是否匹配标志
+        int left=0,right=0,valid=0;
+        // int start=0,len=Integer.MAX_VALUE;
+        while(right<s.length()){
+            char a = s.charAt(right);
+            right++;
+            if(need.containsKey(a)){
+                if(need.get(a).equals(window.get(a))){
+                    valid++;
+                }
+                window.put(a, window.getOrDefault(a, 0)+1);
+            }
+            if(right-left==t.length()){
+                if(valid==t.length()){
+                    res.add(left);
+                }
+                char charAt = s.charAt(left);
+                left++;
+                if(need.containsKey(charAt)){
+                    if(window.get(charAt).equals(need.get(charAt))){
+                        valid--;
+                    }
+                    window.put(charAt, window.getOrDefault(charAt, 0)-1);
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
+
+### 3.无重复字符的最长子串
+
+```java
+public int lengthOfLongestSubstring(String s){
+  HashMa<Character,Integer> window=new HashMap<>();
+  int left=0,right=0,res=0;
+  while(right<s.length()){
+    char c=s.charAt(right);
+    right++;
+    window.put(a, window.getOrDefault(a, 0)+1);
+    while(window.get(c)>1){
+      char d=s.charAt(left);
+      left++;
+      window.put(d, window.getOrDefault(a, 0)-1);
+    }
+    res=Math.max(res,right-left);
+  }
+  return res;
+}
+```
+
+
+
+### 187.重复的DNA序列
+
+```java
+public List<String> findRepeatedDnaSequences(String s) {
+        //转换字符串为4进制数
+        int[] nums = new int[s.length()];
+        for (int i = 0; i < nums.length; i++) {
+            switch (s.charAt(i)) {
+                case 'A':
+                    nums[i] = 0;
+                    break;
+                case 'G':
+                    nums[i] = 1;
+                    break;
+                case 'C':
+                    nums[i] = 2;
+                    break;
+                case 'T':
+                    nums[i] = 3;
+                    break;
+            }
+        }
+        HashSet<Integer> seen=new HashSet<>();
+        HashSet<String> res=new HashSet<>();
+        int L=10;
+        int R=4;
+        int RL=(int) Math.pow(R, L-1);
+        int windowHash=0;
+        int left=0;
+        int right=0;
+        while(right<nums.length){
+            //计算字符串hash值
+            windowHash=windowHash*R+nums[right];
+            right++;
+        }
+        if(right-left==L){
+            if(seen.contains(windowHash)){
+                res.add(s.substring(left, right));
+            }
+            else{
+                seen.add(windowHash);
+            }
+            windowHash=windowHash-nums[left]*RL;
+            left++;
+        }
+        return new LinkedList<>(res);
+    }
+```
+
+
+
